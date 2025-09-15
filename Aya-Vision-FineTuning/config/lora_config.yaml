@@ -1,0 +1,210 @@
+# LoRA (Low-Rank Adaptation) Configuration for Aya Vision 8B
+# Parameter-efficient fine-tuning configuration
+
+# Basic LoRA Parameters
+lora:
+  # Rank of the low-rank adaptation
+  # Higher values = more parameters = potentially better performance but slower training
+  r: 16  # Options: 8, 16, 32, 64
+
+  # LoRA scaling parameter
+  # Typically set to 2x the rank, controls the magnitude of adaptations
+  lora_alpha: 32
+
+  # Dropout probability for LoRA layers
+  # Helps prevent overfitting
+  lora_dropout: 0.05  # Range: 0.0 - 0.2
+
+  # Whether to train bias parameters
+  # Options: "none", "all", "lora_only"
+  bias: "none"
+
+  # Task type for PEFT
+  task_type: "CAUSAL_LM"
+
+# Target Modules Configuration
+target_modules:
+  # Standard attention modules (recommended for most cases)
+  attention:
+    - "q_proj"      # Query projection
+    - "k_proj"      # Key projection
+    - "v_proj"      # Value projection
+    - "o_proj"      # Output projection
+
+  # Extended modules (use for more comprehensive fine-tuning)
+  extended:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"   # Gate projection (for some architectures)
+    - "up_proj"     # Up projection
+    - "down_proj"   # Down projection
+
+  # Language model head (for fine-tuning output layer)
+  with_lm_head:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "lm_head"     # Language model head
+
+  # Vision modules (if needed for vision encoder fine-tuning)
+  vision:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "vision_projection"
+
+# LoRA Configuration Presets
+presets:
+  # Minimal configuration for fast experimentation
+  minimal:
+    r: 8
+    lora_alpha: 16
+    lora_dropout: 0.1
+    target_modules: ["q_proj", "v_proj"]
+
+  # Standard configuration (recommended)
+  standard:
+    r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+  # High-quality configuration for best results
+  high_quality:
+    r: 32
+    lora_alpha: 64
+    lora_dropout: 0.03
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+  # Memory-efficient configuration for limited GPU
+  memory_efficient:
+    r: 8
+    lora_alpha: 16
+    lora_dropout: 0.1
+    target_modules: ["q_proj", "v_proj"]
+
+# Advanced LoRA Settings
+advanced:
+  # Use rank stabilization
+  use_rslora: false
+
+  # Use Dropout on LoRA weights
+  use_dora: false
+
+  # Fan-in/fan-out initialization
+  fan_in_fan_out: false
+
+  # Enable bias training for specific layers
+  bias_trainable_modules: []
+
+  # Modules to save in addition to LoRA weights
+  modules_to_save: []
+
+# Model-Specific Configurations
+model_specific:
+  # Configuration for Aya Vision 8B
+  aya_vision_8b:
+    r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+    bias: "none"
+
+  # Configuration for larger models (if scaling up)
+  aya_vision_32b:
+    r: 32
+    lora_alpha: 64
+    lora_dropout: 0.03
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+    bias: "none"
+
+# Task-Specific Configurations
+task_specific:
+  # Image captioning
+  captioning:
+    r: 16
+    lora_alpha: 32
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+  # Visual Question Answering
+  vqa:
+    r: 24
+    lora_alpha: 48
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj"]
+
+  # Cultural understanding
+  cultural:
+    r: 20
+    lora_alpha: 40
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+  # Multilingual tasks
+  multilingual:
+    r: 32
+    lora_alpha: 64
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+# Performance vs Quality Trade-offs
+trade_offs:
+  # Fast training, lower quality
+  fast:
+    r: 8
+    lora_alpha: 16
+    target_modules: ["q_proj", "v_proj"]
+
+  # Balanced training and quality
+  balanced:
+    r: 16
+    lora_alpha: 32
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+  # Best quality, slower training
+  quality:
+    r: 64
+    lora_alpha: 128
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+# Guidelines and Recommendations
+guidelines:
+  # When to use different ranks:
+  # r=8: Quick experiments, limited compute
+  # r=16: Standard use case, good balance
+  # r=32: High-quality results, more compute
+  # r=64+: Research quality, significant compute
+
+  # Target module selection:
+  # q_proj, v_proj: Minimal, fastest
+  # q_proj, k_proj, v_proj, o_proj: Standard, recommended
+  # + gate_proj, up_proj, down_proj: Comprehensive, slower
+
+  # Alpha recommendations:
+  # alpha = 2 * r: Standard scaling
+  # alpha = r: Conservative scaling
+  # alpha = 4 * r: Aggressive scaling (use carefully)
+
+  # Dropout recommendations:
+  # 0.05: Standard, good generalization
+  # 0.1: Higher regularization
+  # 0.0: No dropout, risk of overfitting
+
+# Configuration Selection Helper
+selection_guide:
+  gpu_memory:
+    "8gb": "memory_efficient"
+    "16gb": "standard"
+    "24gb": "high_quality"
+    "32gb+": "quality"
+
+  training_time:
+    "quick": "minimal"
+    "standard": "balanced"
+    "thorough": "quality"
+
+  data_size:
+    "small": "minimal"
+    "medium": "standard"
+    "large": "high_quality"
