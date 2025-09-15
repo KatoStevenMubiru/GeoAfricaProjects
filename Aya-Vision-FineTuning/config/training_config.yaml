@@ -1,0 +1,162 @@
+# Aya Vision 8B Fine-tuning Configuration
+# This file contains all training parameters and can be easily modified for different experiments
+
+# Model Configuration
+model:
+  base_model_id: "CohereLabs/aya-vision-8b"
+  model_name: "aya-vision-8b-african-finetuned"
+  trust_remote_code: true
+  torch_dtype: "bfloat16"
+
+# Dataset Configuration
+dataset:
+  dataset_id: "Afri-Aya/afri-aya-dataset-v1"  # Replace with your dataset
+  dataset_split: "train"
+  max_samples: null  # Set to a number for testing, null for full dataset
+  validation_split: 0.1  # Fraction of data to use for validation
+  shuffle: true
+  seed: 42
+
+# Training Parameters
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  max_grad_norm: 1.0
+
+  # Optimization
+  optim: "paged_adamw_8bit"
+  lr_scheduler_type: "cosine"
+
+  # Mixed Precision
+  fp16: false
+  bf16: true
+
+  # Memory Optimization
+  gradient_checkpointing: true
+  dataloader_drop_last: false
+  dataloader_num_workers: 2
+
+  # Sequence Settings
+  max_seq_length: 1024
+  truncation: true
+  padding: true
+
+# Logging and Saving
+logging:
+  logging_dir: "./logs"
+  logging_strategy: "steps"
+  logging_steps: 10
+  report_to: "tensorboard"  # Options: tensorboard, wandb, none
+
+  # Saving
+  save_strategy: "steps"
+  save_steps: 50
+  save_total_limit: 3
+  load_best_model_at_end: false
+
+  # Evaluation
+  eval_strategy: "no"  # Change to "steps" if you have validation data
+  eval_steps: 100
+
+# Hub Configuration
+hub:
+  push_to_hub: true
+  hub_strategy: "every_save"
+  hub_model_id: null  # Will be set dynamically based on username
+  hub_token: null  # Will use HF_TOKEN from environment
+
+# Generation Configuration (for testing)
+generation:
+  max_new_tokens: 300
+  temperature: 0.3
+  do_sample: true
+  top_p: 0.9
+  top_k: 50
+  pad_token_id: null  # Will be set to eos_token_id
+
+# Quantization Configuration
+quantization:
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
+
+# Device Configuration
+device:
+  device_map: "auto"
+  torch_compile: false
+
+# Data Processing
+data_processing:
+  # Prompt templates for different tasks
+  prompts:
+    captioning:
+      - "Describe this image in detail."
+      - "What do you see in this image?"
+      - "Please provide a detailed caption for this image."
+      - "What is happening in this image?"
+    vqa:
+      - "Answer the following question about this image: {question}"
+      - "Based on the image, {question}"
+    cultural:
+      - "Describe the cultural elements visible in this image."
+      - "What cultural context can you identify in this image?"
+
+  # Field mappings for different dataset formats
+  field_mappings:
+    image_field: "image"
+    caption_fields: ["caption", "english_caption", "description", "text"]
+    question_field: "question"
+    answer_field: "answer"
+
+# Experimental Settings
+experimental:
+  # Flash Attention (if available)
+  use_flash_attention: false
+
+  # Gradient Compression
+  gradient_compression: false
+
+  # Custom Loss Functions
+  use_custom_loss: false
+
+  # Data Augmentation
+  image_augmentation: false
+  text_augmentation: false
+
+# Memory Profiles for different GPU types
+memory_profiles:
+  # For Kaggle T4 (16GB)
+  t4_16gb:
+    per_device_train_batch_size: 2
+    gradient_accumulation_steps: 8
+    max_seq_length: 1024
+
+  # For systems with 8GB GPU
+  low_memory:
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 16
+    max_seq_length: 512
+
+  # For high-memory systems (32GB+)
+  high_memory:
+    per_device_train_batch_size: 4
+    gradient_accumulation_steps: 4
+    max_seq_length: 2048
+
+# Debugging and Development
+debug:
+  overfit_batches: 0  # Set to positive number to overfit on small subset
+  fast_dev_run: false  # Quick test run
+  verbose_logging: false
+  profile_memory: false
+
+# Resume Training
+resume:
+  resume_from_checkpoint: null  # Path to checkpoint to resume from
+  ignore_data_skip: false
