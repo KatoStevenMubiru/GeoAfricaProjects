@@ -20,7 +20,27 @@ This comprehensive guide walks you through setting up and running the Aya Vision
 
 1. **Kaggle Account**: [Sign up at kaggle.com](https://www.kaggle.com/account/login)
 2. **Hugging Face Account**: [Sign up at huggingface.co](https://huggingface.co/join)
-3. **Dataset Access**: Your dataset should be uploaded to Hugging Face Hub
+3. **Aya Vision 8B Access**: **CRITICAL** - Request access to the gated model
+4. **Dataset Access**: Your dataset should be uploaded to Hugging Face Hub
+
+### 🚨 IMPORTANT: Gated Model Access
+
+**Aya Vision 8B is a GATED model** - you must request and receive access before using it:
+
+#### Steps to Get Access:
+1. Visit: [CohereLabs/aya-vision-8b](https://huggingface.co/CohereLabs/aya-vision-8b)
+2. Click **"Request Access"** button
+3. Fill out the access form with:
+   - Your intended use case (research/education)
+   - Brief description of your project
+4. Wait for approval (usually within 24 hours)
+5. Verify access by checking you can view the model files
+
+#### License Requirements:
+- ✅ **Non-commercial use only** (CC-BY-NC-4.0)
+- ✅ **Research and educational purposes**
+- ✅ **Attribution to Cohere Labs required**
+- ❌ **No commercial applications allowed**
 
 ### Required Tokens
 
