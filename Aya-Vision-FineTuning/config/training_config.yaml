@@ -17,12 +17,12 @@ dataset:
   shuffle: true
   seed: 42
 
-# Training Parameters
+# Training Parameters (Optimized for Aya Vision 8B - 8.63B parameters)
 training:
   num_train_epochs: 1
-  per_device_train_batch_size: 2
-  per_device_eval_batch_size: 2
-  gradient_accumulation_steps: 8
+  per_device_train_batch_size: 1  # Reduced for 8.63B model
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16  # Increased to maintain effective batch size
   learning_rate: 2.0e-4
   weight_decay: 0.01
   warmup_ratio: 0.1
@@ -41,8 +41,8 @@ training:
   dataloader_drop_last: false
   dataloader_num_workers: 2
 
-  # Sequence Settings
-  max_seq_length: 1024
+  # Sequence Settings (Aya Vision supports 16K context but start smaller for memory)
+  max_seq_length: 512  # Start smaller, can increase to 1024 or 2048 if memory allows
   truncation: true
   padding: true
 
