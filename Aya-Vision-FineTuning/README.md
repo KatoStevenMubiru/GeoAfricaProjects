@@ -76,7 +76,19 @@ This repository provides a comprehensive pipeline for fine-tuning the **Aya Visi
 
 - Kaggle account with GPU access
 - Hugging Face account with write token
+- **🚨 CRITICAL: Access to Aya Vision 8B gated model**
 - Dataset uploaded to Hugging Face Hub
+
+### 🔐 Gated Model Access Required
+
+**Aya Vision 8B is a GATED model** - you must request access:
+
+1. **Visit**: [CohereLabs/aya-vision-8b](https://huggingface.co/CohereLabs/aya-vision-8b)
+2. **Click**: "Request Access" button
+3. **Wait**: For approval (usually 24h)
+4. **License**: CC-BY-NC-4.0 (Non-commercial only)
+
+**Without access, the training will fail with authentication errors.**
 
 ### 30-Second Setup
 
@@ -94,7 +106,12 @@ This repository provides a comprehensive pipeline for fine-tuning the **Aya Visi
    CONFIG["dataset_id"] = "your-username/your-dataset"
    ```
 
-4. **Run Training**:
+4. **Install Aya Vision Compatible Transformers**:
+   ```bash
+   pip install 'git+https://github.com/huggingface/transformers.git@v4.49.0-AyaVision'
+   ```
+
+5. **Run Training**:
    - Execute all cells in sequence
    - Monitor progress in TensorBoard
    - Model auto-uploads to Hub when complete
