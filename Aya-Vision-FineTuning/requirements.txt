@@ -1,7 +1,8 @@
 # Core ML Libraries
 torch>=2.0.0
 torchvision>=0.15.0
-transformers==4.49.0
+# CRITICAL: Aya Vision requires specific transformers version from source
+# transformers==4.49.0  # Use git+https://github.com/huggingface/transformers.git@v4.49.0-AyaVision instead
 tokenizers>=0.19.1
 
 # Training and Fine-tuning
